@@ -197,10 +197,7 @@ class Mlog{
     debugファイルに書き込む　追記モード
     */
     public function debug($string=null){
-        
-        $arg_list = func_get_args();
-        echo $arg_list[0];
-    
+
         //準備：ディレクトリと保存ファイルの指定
         $log_dir = $this->LOGDIR . '/' . $this->DEBUGLOGDIR;
         $filename = 'debug.log';
