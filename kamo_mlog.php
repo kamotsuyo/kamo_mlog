@@ -37,6 +37,8 @@ define('PHP_ERROR_LOG_DIR','/Applications/MAMP/logs');
 
 define('KAMO_THIS_PHP_CURRENT_DIR' , dirname(__FILE__));
 
+global $mlog;
+$mlog = new Mlog();
 class Mlog{
 
     private $LOGDIR = KAMO_THIS_PHP_CURRENT_DIR.'/logs';
