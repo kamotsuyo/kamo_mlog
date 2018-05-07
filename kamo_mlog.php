@@ -26,16 +26,34 @@ $mlog = new Mlog();
 $log = 'hogemoga';
 $mlog->debug($log);
 
-* end
+=====ログディレクトリを指定する場合====
+$dlog = new Mlog(__FILE__);
+のように引数にディレクトリを指定してインスタンス化すること。
+$dlog->debug('hoge);
+
+
 **/
 
+
+//グローバルでインスタンス化しておく。
+global $kamlog;
+$kamlog = new Mlog();
 
 
 
 //既定のphp_error.logのディレクトリ
 define('PHP_ERROR_LOG_DIR','/Applications/MAMP/logs');
 
-
+/**
+* このクラスはログ出力とデバッグ管理を行う。
+* $kamlog でglobalインスタンス化している。
+* 
+* @access public
+* @param string $parent_dir
+* 
+* @return 
+* 
+*/
 class Mlog{
     private $DIR;
     
@@ -241,7 +259,3 @@ class Mlog{
         file_put_contents($log_dir. '/' . $filename, $result  ,FILE_APPEND| LOCK_EX);
     }
 }
-
-//グローバルでインスタンス化しておく。
-global $kamlog;
-$kamlog = new Mlog();
