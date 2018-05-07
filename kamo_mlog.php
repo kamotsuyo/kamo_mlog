@@ -35,48 +35,53 @@ $mlog->debug($log);
 //既定のphp_error.logのディレクトリ
 define('PHP_ERROR_LOG_DIR','/Applications/MAMP/logs');
 
-define('KAMO_THIS_PHP_CURRENT_DIR' , dirname(__FILE__));
 
-global $mlog;
-$mlog = new Mlog();
 class Mlog{
-
-    private $LOGDIR = KAMO_THIS_PHP_CURRENT_DIR.'/logs';
-    private $OKLOGDIR = 'ok_log';//運用時ログ用
-    private $ERRORLOGDIR = 'error_log';//運用時ログ用
-    private $DUMPLOGDIR = 'dump';//開発時のvar_dump用
-    private $DEBUGLOGDIR = 'debug';//開発時のデバッグ用
+    private $DIR;
+    
+    private $OK_DIR = 'ok_log';//運用時ログ用
+    private $ERROR_DIR = 'error_log';//運用時ログ用
+    private $DUMP_DIR = 'dump';//開発時のvar_dump用
+    private $DEBUG_DIR= 'debug';//開発時のデバッグ用
     const OK = true;
     const ERROR = false;
     
     //コンストラクタ
-    function __construct(){
+    function __construct($parent_dir = null){
+        //引数$parent_dirがある場合、そディレクトリにログフォルダを作成する
+        if($parent_dir != null){
+            $this->DIR = $parent_dir . '/logs';
+        }else{
+            $this->DIR = __DIR__ . '/logs';
+        }
+        
         $this -> mkLogdir();
     }
     private function mkLogdir(){
         
+        
         //ログ格納用のディレクトリを確認・作成する
         //親フォルダの存在確認
-        if(file_exists ($this -> LOGDIR)){
+        if(file_exists ($this -> DIR)){
             //親フォルダが存在すれば実行
             
             //error用ディレクトリの作成
-            $errordir = $this -> LOGDIR . '/' . $this -> ERRORLOGDIR;
+            $errordir = $this -> DIR . '/' . $this -> ERROR_DIR;
             if(!file_exists($errordir)){
                 mkdir($errordir , 0750 ,true);
             }
             //ok用ディレクトリ作成
-            $okdir = $this -> LOGDIR . '/' . $this -> OKLOGDIR;
+            $okdir = $this -> DIR . '/' . $this -> OK_DIR;
             if(!file_exists($okdir)){
                 mkdir($okdir , 0750 ,true);
             }
             //var_dump用のディレクトリ作成
-            $dumpdir = $this -> LOGDIR . '/' . $this -> DUMPLOGDIR;
+            $dumpdir = $this -> DIR . '/' . $this -> DUMP_DIR;
             if(!file_exists($dumpdir)){
                 mkdir($dumpdir , 0750 ,true);
             }
-            //開発時のDEBUGLOGDIRのディレクトリ作成
-            $dir = $this->LOGDIR . '/' . $this->DEBUGLOGDIR;
+            //開発時のDEBUG_DIRのディレクトリ作成
+            $dir = $this->DIR . '/' . $this->DEBUG_DIR;
             if(!file_exists($dir)){
                 mkdir($dir , 0750 , true);
             }
@@ -84,7 +89,7 @@ class Mlog{
             //LOGFILESフォルダが存在しない場合--作成する
             //第二引数はパーミッション
             //第三引数は階層構造のディレクトリ作成の許可
-            mkdir($this -> LOGDIR , 0750 ,true);
+            mkdir($this -> DIR , 0750 ,true);
             
             //もう一度この関数を呼び出して下位のディレクトリを作成する
             $this -> mkLogdir();
@@ -116,11 +121,11 @@ class Mlog{
             //書き込みディレクトリの指定
             if($flag===true){
             //成功の場合
-                $logDir = $this -> LOGDIR . '/' . $this -> OKLOGDIR;
+                $logDir = $this -> DIR . '/' . $this -> OK_DIR;
 
             }else if($flag===false){
             //エラーの場合
-                $logDir = $this -> LOGDIR . '/' . $this -> ERRORLOGDIR;
+                $logDir = $this -> DIR . '/' . $this -> ERROR_DIR;
             }
 
             //ファイルの書き込み
@@ -140,7 +145,7 @@ class Mlog{
     */
     public function var_dump($target){
         //準備：ディレクトリと保存ファイルの指定
-        $log_dir = $this->LOGDIR . '/' . $this->DUMPLOGDIR;
+        $log_dir = $this->DIR . '/' . $this->DUMP_DIR;
         $filename = 'var_dump.log';
         
         //ob_start関数は通常ブラウザに出力される情報をバッファと呼ばれる領域に保存しあとから取り出すことができるようにする関数です。
@@ -201,7 +206,7 @@ class Mlog{
     public function debug($string=null){
 
         //準備：ディレクトリと保存ファイルの指定
-        $log_dir = $this->LOGDIR . '/' . $this->DEBUGLOGDIR;
+        $log_dir = $this->DIR . '/' . $this->DEBUG_DIR;
         $filename = 'debug.log';
         
         //dumpの結果に「日時」を追記する
@@ -236,3 +241,7 @@ class Mlog{
         file_put_contents($log_dir. '/' . $filename, $result  ,FILE_APPEND| LOCK_EX);
     }
 }
+
+//グローバルでインスタンス化しておく。
+global $kamlog;
+$kamlog = new Mlog();
